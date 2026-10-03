@@ -137,7 +137,7 @@ export async function runSetup(ctx: ExtensionCommandContext, deps: SetupDeps): P
 			break;
 		}
 		if (picked === ADD) {
-			const ref = (await ui.input("Model as provider/id", "opencode-cf/gpt-6-sol"))?.trim();
+			const ref = (await ui.input("Model as provider/id", "anthropic/claude-opus-4-5"))?.trim();
 			if (!ref) continue;
 			const model = deps.models.find((m) => keyOf(m) === ref);
 			if (!model) {
