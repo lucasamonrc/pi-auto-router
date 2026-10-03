@@ -1,0 +1,29 @@
+{
+	"name": "pi-auto-router",
+	"version": "0.1.0",
+	"description": "An \"Auto\" model for pi: classifies each prompt with a decision model (Cloudflare Clef or TypeSafe Jev) and routes it to the best-fitting model you have.",
+	"type": "module",
+	"license": "MIT",
+	"author": "Lucas Castro",
+	"repository": { "type": "git", "url": "git+https://github.com/lucasamonrc/pi-auto-router.git" },
+	"keywords": ["pi-package", "pi", "router", "model-routing", "clef", "jev", "cloudflare"],
+	"files": ["src", "schema.json", "examples", "README.md", "LICENSE"],
+	"pi": {
+		"extensions": ["./src/index.ts"]
+	},
+	"scripts": {
+		"test": "node --test \"test/**/*.test.ts\"",
+		"typecheck": "tsc --noEmit",
+		"check": "npm run typecheck && npm test"
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-ai": "*",
+		"@earendil-works/pi-coding-agent": "*"
+	},
+	"devDependencies": {
+		"@earendil-works/pi-ai": "*",
+		"@earendil-works/pi-coding-agent": "*",
+		"@types/node": "^24.0.0",
+		"typescript": "^5.9.0"
+	}
+}

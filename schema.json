@@ -1,0 +1,66 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "pi-auto-router configuration",
+	"type": "object",
+	"additionalProperties": false,
+	"definitions": {
+		"tier": { "type": "string", "enum": ["light", "standard", "strong", "frontier"] },
+		"modelRef": { "type": "string", "description": "provider/id (e.g. \"anthropic/claude-opus-4-5\") or an alias (e.g. \"opus\")" }
+	},
+	"properties": {
+		"$schema": { "type": "string" },
+		"classifier": {
+			"type": "string",
+			"default": "clef",
+			"description": "\"clef\" or \"clef-flash\" (Cloudflare Workers AI), or any pi classifier as provider/id, e.g. \"typesafe/jev-latest\"."
+		},
+		"accountId": { "type": "string", "description": "Cloudflare account for Clef. Detected from your login when unset." },
+		"classifierTimeoutMs": { "type": "number", "default": 8000 },
+		"pool": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Models the router may use, as provider/id. Unset: the newest model of each well-known family you have access to."
+		},
+		"providers": {
+			"type": "array",
+			"items": { "type": "string" },
+			"description": "Restrict auto-discovery to these providers, in order of preference."
+		},
+		"models": {
+			"type": "object",
+			"description": "Per-model overrides, keyed by provider/id.",
+			"additionalProperties": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"tier": { "$ref": "#/definitions/tier" },
+					"strengths": { "type": "array", "items": { "type": "string" }, "description": "e.g. feature, frontend, debugging, architecture, writing, long_context" },
+					"alias": { "type": "string" },
+					"label": { "type": "string" }
+				}
+			}
+		},
+		"kinds": {
+			"type": "object",
+			"description": "Task kinds, merged over the built-ins (question, small_change, feature, frontend, debugging, architecture, large_context, writing) by name.",
+			"additionalProperties": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"desc": { "type": "string", "description": "What counts as this kind. The classifier reads this." },
+					"tier": { "$ref": "#/definitions/tier" },
+					"prefer": { "type": "array", "items": { "type": "string" }, "description": "Strengths to prefer within the tier." },
+					"minContext": { "type": "number" },
+					"model": { "$ref": "#/definitions/modelRef" },
+					"hardModel": { "$ref": "#/definitions/modelRef" },
+					"enabled": { "type": "boolean" }
+				}
+			}
+		},
+		"fallback": { "$ref": "#/definitions/modelRef", "description": "Model when the classifier is unavailable at the start of a session." },
+		"direct": { "$ref": "#/definitions/modelRef", "description": "Model for compaction summaries and other out-of-loop requests." },
+		"shiftThreshold": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.7 },
+		"requestThreshold": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.6 },
+		"adjustThinking": { "type": "boolean", "default": true }
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"$schema": "https://raw.githubusercontent.com/lucasamonrc/pi-auto-router/main/schema.json",
+	"classifier": "clef",
+	"pool": [
+		"anthropic/claude-opus-4-5",
+		"anthropic/claude-sonnet-4-5",
+		"anthropic/claude-haiku-4-5",
+		"openai/gpt-5",
+		"openai/gpt-5-mini"
+	],
+	"models": {
+		"openai/gpt-5": { "tier": "strong", "strengths": ["debugging"] }
+	},
+	"kinds": {
+		"frontend": { "model": "opus" },
+		"data_science": { "desc": "Notebooks, pandas, statistics, plotting", "tier": "standard" },
+		"writing": { "enabled": false }
+	},
+	"fallback": "sonnet"
+}
