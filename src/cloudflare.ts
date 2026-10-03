@@ -23,7 +23,6 @@ const WRANGLER_CONFIGS = [
 	join(homedir(), ".wrangler/config/default.toml"),
 ].filter(Boolean);
 
-/** Command used to run wrangler. `npx --yes wrangler` works from any directory. */
 function wranglerCommand(): [string, string[]] {
 	const [cmd, ...args] = (process.env.AUTO_ROUTER_WRANGLER ?? "npx --yes wrangler").split(/\s+/);
 	return [cmd, args];
@@ -51,7 +50,12 @@ export async function hasWranglerLogin(): Promise<boolean> {
 /** `wrangler auth token` refreshes the OAuth token in wrangler's config file. */
 async function refreshWrangler(): Promise<void> {
 	const [cmd, args] = wranglerCommand();
-	await execFileAsync(cmd, [...args, "auth", "token", "--json"], { timeout: 60_000 }).catch(() => undefined);
+	try {
+		await execFileAsync(cmd, [...args, "auth", "token", "--json"], { timeout: 60_000, cwd: homedir() });
+	} catch (error) {
+		const failure = error as Error & { stderr?: string };
+		throw new Error(`Could not refresh Wrangler OAuth token: ${failure.stderr?.trim() || failure.message}`, { cause: error });
+	}
 }
 
 export async function getToken(forceRefresh = false): Promise<{ token: string; source: TokenSource }> {
@@ -73,7 +77,7 @@ export async function getToken(forceRefresh = false): Promise<{ token: string; s
 export function wranglerLogin(): Promise<boolean> {
 	const [cmd, args] = wranglerCommand();
 	return new Promise((resolve) => {
-		const child = spawn(cmd, [...args, "login"], { stdio: "ignore" });
+		const child = spawn(cmd, [...args, "login"], { stdio: "ignore", cwd: homedir() });
 		const timer = setTimeout(() => child.kill(), 300_000);
 		child.on("exit", (code) => {
 			clearTimeout(timer);
