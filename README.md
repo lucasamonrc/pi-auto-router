@@ -124,7 +124,9 @@ See [`schema.json`](schema.json) for every option. Built-in kinds and family pro
 |---|---|
 | `CLOUDFLARE_API_TOKEN` | Use an API token instead of the wrangler login |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account for Clef |
-| `AUTO_ROUTER_WRANGLER` | How to run wrangler (default `npx --yes wrangler`, e.g. `pnpm exec wrangler`) |
+| `AUTO_ROUTER_WRANGLER` | How to run wrangler (default `npx --yes wrangler`; custom commands must work from your home directory, e.g. an absolute path to the Wrangler executable) |
+
+Wrangler token refresh and login run from your home directory, not the current project, so project workspace configuration does not interfere with command resolution. If token refresh fails, account discovery reports the Wrangler command error instead of retrying with an expired token.
 
 ## Development
 
